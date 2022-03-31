@@ -24,14 +24,6 @@ namespace MMI.Services
 
 		public void Run()
 		{
-			// for (int i = 0; i < _config.GetValue<int>("LoopTimes"); i++)
-			// {
-			// 	_log.LogError("Run number {runNumber}", i);
-			// }
-
-			var greeting = true;
-
-			Console.WriteLine(Persistent.CurrentQuotation.Id);
 			_displayService.TableInit();
 			//AnsiConsole.Write(Persistent.QuotationTable);
 			_menuService.DisplayMainMenu();

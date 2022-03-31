@@ -11,35 +11,35 @@ namespace MMI.Models
 		public string Model { get; set; } = string.Empty;
 		public string Emissions { get; set; } = string.Empty;
 		public string InsuranceCategory { get; set; } = string.Empty;
-		public int TotalCost { get; set; }
+		public int TotalCost { get; set; } = 1000;
 		public DateTime ValidUntil { get; set; }
 		
 		public void QuotationTotalCost()
 		{
-			var totalCost = 1000;
-
-			totalCost += SexCost();
-			totalCost += AgeCost();
-			totalCost += CountyCost();
-			totalCost += ModelCost();
-			totalCost += EmissionsCost();
-			totalCost += InsuranceCategoryCost();
-
-			TotalCost = totalCost;
+			// var totalCost = 1000;
+			//
+			// totalCost += SexCost();
+			// totalCost += AgeCost();
+			// totalCost += CountyCost();
+			// totalCost += ModelCost();
+			// totalCost += EmissionsCost();
+			// totalCost += InsuranceCategoryCost();
 			
+			var sexCost = SexCost();
+			var ageCost = AgeCost();
+			var countyCost = CountyCost();
+			var modelCost = ModelCost();
+			var emissionsCost = EmissionsCost();
+			var insuranceCategoryCost = InsuranceCategoryCost();
+			
+			TotalCost = 1000 + ageCost + sexCost + countyCost + modelCost + emissionsCost + insuranceCategoryCost;
+			//TotalCost = 1000 + ageCost;
 			ValidUntil = DateTime.Today.AddDays(31);
 		}
 		
 		private int SexCost()
 		{
-			var cost = Sex switch
-			{
-				"Male" => 1000,
-				"Female" => 800,
-				_ => 0
-			};
-
-			return cost;
+			return Sex == "Male" ? 1000 : 800;
 		}
 		
 		private int AgeCost()
@@ -48,6 +48,7 @@ namespace MMI.Models
 			{
 				var cost = Age switch
 				{
+					0 => 0,
 					< 20 => 400,
 					<= 35 => -800,
 					< 80 => -1300,
@@ -61,6 +62,7 @@ namespace MMI.Models
 			{
 				var cost = Age switch
 				{
+					0 => 0,
 					< 20 => 160,
 					<= 35 => -320,
 					< 80 => -520,
@@ -126,7 +128,7 @@ namespace MMI.Models
 		
 		private int InsuranceCategoryCost()
 		{
-			var cost = Emissions switch
+			var cost = InsuranceCategory switch
 			{
 				"Fully Comprehensive" => 200,
 				"Third Party Fire and Theft" => -120,
@@ -136,6 +138,4 @@ namespace MMI.Models
 			return cost;
 		}
 	}
-	
-	
 }

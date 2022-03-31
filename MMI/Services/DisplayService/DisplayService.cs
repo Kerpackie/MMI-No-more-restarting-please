@@ -28,7 +28,8 @@ namespace MMI.Services.DisplayService
 			table.AddRow("Vehicle Model", Persistent.CurrentQuotation.Model);
 			table.AddRow("Emissions Class", Persistent.CurrentQuotation.Emissions);
 			table.AddRow("Insurance Category", Persistent.CurrentQuotation.InsuranceCategory);
-			
+			table.AddRow("Total Cost:", Persistent.CurrentQuotation.TotalCost.ToString());
+
 		}
 		
 		public void RenderQuotationCriteriaTable()
@@ -52,18 +53,14 @@ namespace MMI.Services.DisplayService
 			}
 		}
 
-		public void UpdateQuotationTableCells()
+		public void UpdateQuotationTableCells(int row, string menuItem)
 		{
 			var table = Persistent.QuotationTable;
+			table.UpdateCell(row, 1, menuItem);
 			
-			//table.
+			Persistent.CurrentQuotation.QuotationTotalCost();
+			table.UpdateCell(6, 1, Persistent.CurrentQuotation.TotalCost.ToString());
 		}
 
-		public void AddToQuotationTable(string criteria, string value)
-		{
-			var table = Persistent.QuotationTable;
-			
-			table.AddRow(criteria, value);
-		}
 	}
 }

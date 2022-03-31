@@ -8,6 +8,7 @@ using MMI.Data;
 using MMI.Services;
 using MMI.Services.DisplayService;
 using MMI.Services.MenuService;
+using MMI.Services.QuotationService;
 using Serilog;
 
 namespace MMI
@@ -32,12 +33,13 @@ namespace MMI
 				.ConfigureServices((context, services) =>
 				{
 					// Add EF services to the services container
-					//services.AddDbContext<DataContext>(options =>
-						//options.UseSqlite(context.Configuration.GetConnectionString("DefaultConnection")));
+					services.AddDbContext<DataContext>(options =>
+						options.UseSqlite(context.Configuration.GetConnectionString("DefaultConnection")));
 						
 					services.AddTransient<IGreetingService, GreetingService>();
 					services.AddSingleton<IMenuService, MenuService>();
 					services.AddSingleton<IDisplayService, DisplayService>();
+					services.AddSingleton<IQuotationService, QuotationService>();
 				})
 				.UseSerilog()
 				.Build();

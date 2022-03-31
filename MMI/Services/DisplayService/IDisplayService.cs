@@ -6,6 +6,6 @@
 		void TableInit();
 		void RenderQuotationCriteriaTable();
 		void QuotationTableClear();
-		void UpdateQuotationTableCells();
+		void UpdateQuotationTableCells(int row, string menuItem);
 	}
 }

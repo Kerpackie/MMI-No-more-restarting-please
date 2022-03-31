@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MMI.Services.DisplayService;
+using MMI.Services.QuotationService;
 using Spectre.Console;
 
 namespace MMI.Services.MenuService
@@ -9,10 +10,12 @@ namespace MMI.Services.MenuService
 	public class MenuService : IMenuService
 	{
 		private readonly IDisplayService _displayService;
+		private readonly IQuotationService _quotationService;
 
-		public MenuService(IDisplayService displayService)
+		public MenuService(IDisplayService displayService, IQuotationService quotationService)
 		{
 			_displayService = displayService;
+			_quotationService = quotationService;
 		}
 		
 		
@@ -26,8 +29,6 @@ namespace MMI.Services.MenuService
 			var menu = AnsiConsole.Prompt(
 				new SelectionPrompt<string>()
 					.Title("Please select a menu option:")
-					.PageSize(10)
-					.MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
 					.AddChoices(menuItems));
 			
 			MainMenuRouting(menu);
@@ -74,6 +75,9 @@ namespace MMI.Services.MenuService
 				case "Insurance Category":
 					CriteriaSelectionMenuInsuranceCategory();
 					break;
+				case "Save Quotation":
+					SaveQuotationToDatabase();
+					break;
 				case "Exit":
 					break;
 				// Exit application
@@ -83,7 +87,7 @@ namespace MMI.Services.MenuService
 		public void SelectQuotationCriteriaMenu()
 		{
 			_displayService.RenderQuotationCriteriaTable();
-			var menuItems = new [] { "Sex", "Age", "County", "Model", "Emissions Category", "Insurance Category" };
+			var menuItems = new [] { "Sex", "Age", "County", "Model", "Emissions Category", "Insurance Category", "Save Quotation" };
 			
 			var menuItem = AnsiConsole.Prompt(
 				new SelectionPrompt<string>()
@@ -107,7 +111,7 @@ namespace MMI.Services.MenuService
 					.AddChoices(menuItems));
 
 			Persistent.CurrentQuotation.Sex = menuOption;
-			Persistent.QuotationTable.UpdateCell(0, 1, menuOption);
+			_displayService.UpdateQuotationTableCells(0, menuOption);
 			
 			SelectQuotationCriteriaMenu();
 		}
@@ -118,8 +122,7 @@ namespace MMI.Services.MenuService
 				new TextPrompt<int>("[green]Customer Age:[/]"));
 
 			Persistent.CurrentQuotation.Age = customerAge;
-			Persistent.QuotationTable.UpdateCell(1, 1, customerAge.ToString());
-			
+			_displayService.UpdateQuotationTableCells(1, customerAge.ToString());
 			SelectQuotationCriteriaMenu();
 		}
 
@@ -135,7 +138,7 @@ namespace MMI.Services.MenuService
 					.AddChoices(menuItems));
 
 			Persistent.CurrentQuotation.County = menuOption;
-			Persistent.QuotationTable.UpdateCell(2, 1, menuOption);
+			_displayService.UpdateQuotationTableCells(2, menuOption);
 
 			SelectQuotationCriteriaMenu();
 		}
@@ -164,7 +167,7 @@ namespace MMI.Services.MenuService
 					vehicleMakeList.AddRange(opel);
 					break;
 				case "Toyota":
-					var toyota = new[] {"Auris", "Yaris", "Corolla, Avensis"};
+					var toyota = new[] {"Auris", "Yaris", "Corolla", "Avensis"};
 					vehicleMakeList.AddRange(toyota);
 					break;
 				case "Renault":
@@ -183,7 +186,7 @@ namespace MMI.Services.MenuService
 			Persistent.CurrentQuotation.Model = customerVehicle;
 			
 			var cellVehicle = $"{menuOption}-{customerVehicle}";
-			Persistent.QuotationTable.UpdateCell(3, 1, cellVehicle);
+			_displayService.UpdateQuotationTableCells(3, cellVehicle);
 			
 			SelectQuotationCriteriaMenu();
 		}
@@ -200,7 +203,7 @@ namespace MMI.Services.MenuService
 					.AddChoices(menuItems));
 
 			Persistent.CurrentQuotation.Emissions = menuOption;
-			Persistent.QuotationTable.UpdateCell(4, 1, menuOption);
+			_displayService.UpdateQuotationTableCells(4, menuOption);
 
 			SelectQuotationCriteriaMenu();
 		}
@@ -217,9 +220,24 @@ namespace MMI.Services.MenuService
 					.AddChoices(menuItems));
 
 			Persistent.CurrentQuotation.InsuranceCategory = menuOption;
-			Persistent.QuotationTable.UpdateCell(5, 1, menuOption);
+			_displayService.UpdateQuotationTableCells(5, menuOption);
 
 			SelectQuotationCriteriaMenu();
+		}
+
+		public void SaveQuotationToDatabase()
+		{
+			if (!AnsiConsole.Confirm("Would you like to save the quotation to the database?"))
+			{
+				SelectQuotationCriteriaMenu();
+			}
+			
+			//DisplayMainMenu();
+
+			var quotation = Persistent.CurrentQuotation;
+			//_quotationService.SaveQuotationAsync(quotation);
+			// reply with a confirmation message
+			AnsiConsole.WriteLine("[green]Quotation saved to database[/]");
 		}
 	}
 }

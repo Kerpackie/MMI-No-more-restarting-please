@@ -25,8 +25,8 @@ namespace MMI.Services.MenuService
 		void CriteriaSelectionMenuMake();
 		void CriteriaSelectionMenuEmissionsCategory();
 		void CriteriaSelectionMenuInsuranceCategory();
-		
-		
+		void SaveQuotationToDatabase();
+
 
 
 	}
