@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MMI.Data;
 using MMI.Services;
 using MMI.Services.DisplayService;
+using MMI.Services.FileService;
 using MMI.Services.MenuService;
 using MMI.Services.QuotationService;
 using Serilog;
@@ -15,7 +15,7 @@ namespace MMI
 {
 	class Program
 	{
-		static void Main(string[] args)
+		static async Task Main(string[] args)
 		{
 			var builder = new ConfigurationBuilder();
 			BuildConfig(builder);
@@ -27,16 +27,13 @@ namespace MMI
 				//.WriteTo.Console()
 				.CreateLogger();
 
-			Log.Logger.Information("Application Starting");
+			Log.Logger.Information("--- MMI started ---");
 
 			var host = Host.CreateDefaultBuilder()
 				.ConfigureServices((context, services) =>
 				{
-					// Add EF services to the services container
-					services.AddDbContext<DataContext>(options =>
-						options.UseSqlite(context.Configuration.GetConnectionString("DefaultConnection")));
-						
 					services.AddTransient<IGreetingService, GreetingService>();
+					services.AddSingleton<IFileService, FileService>();
 					services.AddSingleton<IMenuService, MenuService>();
 					services.AddSingleton<IDisplayService, DisplayService>();
 					services.AddSingleton<IQuotationService, QuotationService>();

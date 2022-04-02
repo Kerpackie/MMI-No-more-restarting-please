@@ -1,9 +1,7 @@
-﻿using System;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MMI.Services.DisplayService;
 using MMI.Services.MenuService;
-using Spectre.Console;
 
 namespace MMI.Services
 {
@@ -24,7 +22,8 @@ namespace MMI.Services
 
 		public void Run()
 		{
-			_displayService.TableInit();
+			_displayService.TableInit(Persistent.QuotationTable);
+			_displayService.CustomerTable(Persistent.CustomerTable);
 			//AnsiConsole.Write(Persistent.QuotationTable);
 			_menuService.DisplayMainMenu();
 		}

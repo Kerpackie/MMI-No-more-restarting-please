@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using MMI.Models;
 using MMI.Services.DisplayService;
+using MMI.Services.FileService;
 using MMI.Services.QuotationService;
+using Serilog;
 using Spectre.Console;
 
 namespace MMI.Services.MenuService
@@ -11,32 +14,35 @@ namespace MMI.Services.MenuService
 	{
 		private readonly IDisplayService _displayService;
 		private readonly IQuotationService _quotationService;
+		private readonly IFileService _fileService;
+		private readonly ILogger<MenuService> _logger;
 
-		public MenuService(IDisplayService displayService, IQuotationService quotationService)
+		public MenuService(IDisplayService displayService,
+			IQuotationService quotationService,
+			IFileService fileService, 
+			ILogger<MenuService> logger)
 		{
 			_displayService = displayService;
 			_quotationService = quotationService;
+			_fileService = fileService;
+			_logger = logger;
 		}
 		
-		
-
 		public void DisplayMainMenu()
 		{
+			_logger.LogInformation("Displaying main menu");
+			
 			_displayService.MenuFiglet();
+			_displayService.RuleRedLeft("Main Menu");
 			
-			var menuItems = new [] { "Generate New Quotation", "Exit" };
-			
-			var menu = AnsiConsole.Prompt(
-				new SelectionPrompt<string>()
-					.Title("Please select a menu option:")
-					.AddChoices(menuItems));
-			
-			MainMenuRouting(menu);
-		}
+			const string prompt = "Please select an option";
+			var menuItems = new [] { "Generate New Quotation", "Search for Quotation", "Search for Policy", "Reports", "Exit" };
 
-		public void DisplayGenerateQuotation()
-		{
-			throw new System.NotImplementedException();
+			var menu = DisplayMenuPrompt(prompt, menuItems);
+			
+			_logger.LogDebug("Menu selected: {menu}", menu);
+
+			MainMenuRouting(menu);
 		}
 
 		public void MainMenuRouting(string menuOption)
@@ -45,115 +51,140 @@ namespace MMI.Services.MenuService
 			{
 				case "Generate New Quotation":
 					AnsiConsole.Write(new Rule("Quotation Criteria").LeftAligned());
-					SelectQuotationCriteriaMenu();
+					SelectQuotationCriteriaMenu(new Quotation());
+					break;
+				case "Search for Quotation":
+					SearchQuotationMenu();
+					break;
+				case "Search for Policy":
+					SearchPolicyMenu();
+					break;
+				case "Reports":
+					ReportsMenu();
 					break;
 				case "Exit":
+					_displayService.RuleRedLeft("Exiting...");
+					Thread.Sleep(1000);
 					break;
-					// Exit application
 			}
 		}
 
-		public void GenerateQuotationRouting(string menuOption)
+		public void SelectQuotationCriteriaMenu(Quotation quotation)
 		{
-			switch (menuOption)
+			_logger.LogInformation("Displaying quotation criteria menu");
+			
+			_displayService.RenderQuotationCriteriaTable();
+			_displayService.RuleRedLeft("Create New Quotation");
+			
+			const string prompt = "Please select a menu option";
+			var menuItems = new [] { "Sex", "Age", "County", "Model", "Emissions Category", "Insurance Category", "Save Quotation", "Main Menu" };
+
+			var menuItem = DisplayMenuPrompt(prompt, menuItems);
+			
+			_logger.LogDebug("Menu selected: {menu}", menuItem);
+
+			switch (menuItem)
 			{
 				case "Sex":
-					CriteriaSelectionMenuGender();
+					CriteriaSelectionMenuGender(quotation);
 					break;
 				case "Age":
-					CriteriaSelectionMenuAge();
+					CriteriaSelectionMenuAge(quotation);
 					break;
 				case "County":
-					CriteriaSelectionMenuCounty();
+					CriteriaSelectionMenuCounty(quotation);
 					break;
 				case "Model":
-					CriteriaSelectionMenuMake();
+					CriteriaSelectionMenuMake(quotation);
 					break;
 				case "Emissions Category":
-					CriteriaSelectionMenuEmissionsCategory();
+					CriteriaSelectionMenuEmissionsCategory(quotation);
 					break;
 				case "Insurance Category":
-					CriteriaSelectionMenuInsuranceCategory();
+					CriteriaSelectionMenuInsuranceCategory(quotation);
 					break;
 				case "Save Quotation":
-					SaveQuotationToDatabase();
+					quotation.Customer = new Customer();
+					AddCustomerMenu(quotation);
 					break;
-				case "Exit":
+				case "Main Menu":
+					DisplayMainMenu();
 					break;
-				// Exit application
 			}
 		}
 
-		public void SelectQuotationCriteriaMenu()
+		public void CriteriaSelectionMenuGender(Quotation quotation)
 		{
-			_displayService.RenderQuotationCriteriaTable();
-			var menuItems = new [] { "Sex", "Age", "County", "Model", "Emissions Category", "Insurance Category", "Save Quotation" };
-			
-			var menuItem = AnsiConsole.Prompt(
-				new SelectionPrompt<string>()
-					.Title("Please select a menu option:")
-					.PageSize(10)
-					.MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
-					.AddChoices(menuItems));
+			_logger.LogInformation("Displaying Sex Selection Menu");
 
-			GenerateQuotationRouting(menuItem);
-		}
-
-		public void CriteriaSelectionMenuGender()
-		{
+			const string prompt = "Please select a sex";
 			var menuItems = new [] { "Male", "Female" };
-			
-			var menuOption = AnsiConsole.Prompt(
-				new SelectionPrompt<string>()
-					.Title("Please select a sex:")
-					.PageSize(10)
-					.MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
-					.AddChoices(menuItems));
 
-			Persistent.CurrentQuotation.Sex = menuOption;
-			_displayService.UpdateQuotationTableCells(0, menuOption);
+			var menuOption = DisplayMenuPrompt(prompt, menuItems);
 			
-			SelectQuotationCriteriaMenu();
+			_logger.LogDebug("Menu Selected: {menu}", menuOption);
+
+			quotation.Sex = menuOption;
+			_logger.LogDebug("Quotation Property Sex set to: {menu}", menuOption);
+			
+			_displayService.UpdateQuotationTableCells(0, quotation.Sex, quotation);
+			
+			SelectQuotationCriteriaMenu(quotation);
 		}
 
-		public void CriteriaSelectionMenuAge()
+		public void CriteriaSelectionMenuAge(Quotation quotation)
 		{
+			_logger.LogInformation("Displaying Age Selection Menu");
+			
 			var customerAge = AnsiConsole.Prompt(
-				new TextPrompt<int>("[green]Customer Age:[/]"));
-
-			Persistent.CurrentQuotation.Age = customerAge;
-			_displayService.UpdateQuotationTableCells(1, customerAge.ToString());
-			SelectQuotationCriteriaMenu();
-		}
-
-		public void CriteriaSelectionMenuCounty()
-		{
-			var menuItems = new [] { "Limerick", "Tipperary", "Cork", "Clare", "Kerry", "Waterford" };
+				new TextPrompt<int>("[green]Customer Age:[/]")
+					.PromptStyle("green")
+					.ValidationErrorMessage("[red]That's not a valid age[/]")
+					.Validate(age =>
+					{
+						return age switch
+						{
+							<= 16 => ValidationResult.Error("[red]Must be 17 or older.[/]"),
+							>= 88 => ValidationResult.Error("[red]Must be younger than 88.[/]"),
+							_ => ValidationResult.Success(),
+						};
+					}));
 			
-			var menuOption = AnsiConsole.Prompt(
-				new SelectionPrompt<string>()
-					.Title("Please select a county:")
-					.PageSize(10)
-					.MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
-					.AddChoices(menuItems));
-
-			Persistent.CurrentQuotation.County = menuOption;
-			_displayService.UpdateQuotationTableCells(2, menuOption);
-
-			SelectQuotationCriteriaMenu();
+			quotation.Age = customerAge;
+			
+			_logger.LogDebug("Quotation Property Age set to: {menu}", customerAge);
+			
+			_displayService.UpdateQuotationTableCells(1, quotation.Age.ToString(), quotation);
+			SelectQuotationCriteriaMenu(quotation);
 		}
 
-		public void CriteriaSelectionMenuMake()
+		public void CriteriaSelectionMenuCounty(Quotation quotation)
 		{
+			_logger.LogInformation("Displaying County Selection Menu");
+
+			const string prompt = "Please select a county";
+			var menuItems = new [] { "Limerick", "Tipperary", "Cork", "Clare", "Kerry", "Waterford" };
+
+			var menuOption = DisplayMenuPrompt(prompt, menuItems);
+
+			quotation.County = menuOption;
+			
+			_logger.LogDebug("Quotation Property County set to: {menu}", menuOption);
+			
+			_displayService.UpdateQuotationTableCells(2, quotation.County, quotation);
+
+			SelectQuotationCriteriaMenu(quotation);
+		}
+
+		public void CriteriaSelectionMenuMake(Quotation quotation)
+		{
+			_logger.LogInformation("Displaying Make Selection Menu");
+			
+			const string prompt = "Please select a vehicle make";
 			var menuItems = new [] { "BMW", "Opel", "Toyota", "Renault" };
 			
-			var menuOption = AnsiConsole.Prompt(
-				new SelectionPrompt<string>()
-					.Title("Please select a Vehicle Make:")
-					.PageSize(10)
-					.MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
-					.AddChoices(menuItems));
-			
+			var menuOption = DisplayMenuPrompt(prompt, menuItems);
+
 			var vehicleMakeList = new List<string>();
 			
 			switch (menuOption)
@@ -176,68 +207,490 @@ namespace MMI.Services.MenuService
 					break;
 			}
 
-			var customerVehicle = AnsiConsole.Prompt(
-				new SelectionPrompt<string>()
-					.Title($"Please select a {menuOption} Model:")
-					.PageSize(10)
-					.MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
-					.AddChoices(vehicleMakeList));
+			_logger.LogInformation("Displaying Model Selection Menu");
+			
+			var vehiclePrompt = $"Please select a {menuOption} model";
 
-			Persistent.CurrentQuotation.Model = customerVehicle;
+			var customerVehicle = DisplayMenuPrompt(vehiclePrompt, vehicleMakeList.ToArray());
+
+			quotation.Model = customerVehicle;
+			
+			_logger.LogDebug("Quotation Property Model set to: {menu}", customerVehicle);
 			
 			var cellVehicle = $"{menuOption}-{customerVehicle}";
-			_displayService.UpdateQuotationTableCells(3, cellVehicle);
+			_displayService.UpdateQuotationTableCells(3, cellVehicle, quotation);
 			
-			SelectQuotationCriteriaMenu();
+			SelectQuotationCriteriaMenu(quotation);
 		}
 
-		public void CriteriaSelectionMenuEmissionsCategory()
+		public void CriteriaSelectionMenuEmissionsCategory(Quotation quotation)
 		{
+			_logger.LogInformation("Displaying Emissions Category Selection Menu");
+
+			const string prompt = "Please select a vehicle emissions class";
 			var menuItems = new [] { "Low", "Medium", "High" };
+
+			var menuOption = DisplayMenuPrompt(prompt, menuItems);
+
+			quotation.Emissions = menuOption;
 			
-			var menuOption = AnsiConsole.Prompt(
-				new SelectionPrompt<string>()
-					.Title("Please select a vehicle emissions category:")
-					.PageSize(10)
-					.MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
-					.AddChoices(menuItems));
+			_logger.LogDebug("Quotation Property Emissions set to: {menu}", menuOption);
+			
+			_displayService.UpdateQuotationTableCells(4, quotation.Emissions, quotation);
 
-			Persistent.CurrentQuotation.Emissions = menuOption;
-			_displayService.UpdateQuotationTableCells(4, menuOption);
-
-			SelectQuotationCriteriaMenu();
+			SelectQuotationCriteriaMenu(quotation);
 		}
 
-		public void CriteriaSelectionMenuInsuranceCategory()
+		public void CriteriaSelectionMenuInsuranceCategory(Quotation quotation)
 		{
+			_logger.LogInformation("Displaying Insurance Category Selection Menu");
+			
+			const string prompt = "Please select an insurance category:"; 
 			var menuItems = new [] { "Fully Comprehensive", "Third Party Fire and Theft" };
 			
-			var menuOption = AnsiConsole.Prompt(
-				new SelectionPrompt<string>()
-					.Title("Please select an Insurance Category:")
-					.PageSize(10)
-					.MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
-					.AddChoices(menuItems));
+			var menuOption = DisplayMenuPrompt(prompt, menuItems);
 
-			Persistent.CurrentQuotation.InsuranceCategory = menuOption;
-			_displayService.UpdateQuotationTableCells(5, menuOption);
+			quotation.InsuranceCategory = menuOption;
+			
+			_logger.LogDebug("Quotation Property InsuranceCategory set to: {menu}", menuOption);
+			
+			_displayService.UpdateQuotationTableCells(5, quotation.InsuranceCategory, quotation);
 
-			SelectQuotationCriteriaMenu();
+			SelectQuotationCriteriaMenu(quotation);
 		}
 
-		public void SaveQuotationToDatabase()
+		public async void SaveQuotationToDatabase(Quotation quotation)
 		{
+			_logger.LogInformation("Save Quotation to Database Menu Loaded");
+			
+			_displayService.RuleRedLeft("Save Quotation?");
 			if (!AnsiConsole.Confirm("Would you like to save the quotation to the database?"))
 			{
-				SelectQuotationCriteriaMenu();
+				SelectQuotationCriteriaMenu(quotation);
+			}
+
+			var savedQuotation = await _quotationService.SaveQuotationAsync(quotation);
+			ConvertQuotationToPolicy(savedQuotation);
+		}
+
+		public void AddCustomerMenu(Quotation quotation)
+		{
+			_logger.LogInformation("Add Customer Menu Loaded");
+			
+			_displayService.RenderCustomerTable();
+			_displayService.RuleRedLeft("Create New Customer");
+
+			const string prompt = "Please select a menu option";
+			var menuItems = new [] { "First Name", "Surname", "Street", "County", "Eircode", "Phone Number", "Save Quotation", "Back", "Main Menu" };
+
+			var menuItem = DisplayMenuPrompt(prompt, menuItems);
+
+			switch (menuItem)
+			{
+				
+				case "First Name":
+					AddCustomerFirstName(quotation);
+					break;
+				case "Surname":
+					AddCustomerLastName(quotation);
+					break;
+				case "Street":
+					AddCustomerStreet(quotation);
+					break;
+				case "County":
+					AddCustomerCounty(quotation);
+					break;
+				case "Eircode":
+					AddCustomerEirCode(quotation);
+					break;
+				case "Phone Number":
+					AddCustomerPhoneNumber(quotation);
+					break;
+				case "Save Quotation":
+					SaveQuotationToDatabase(quotation);
+					break;
+				case "Main Menu":
+					DisplayMainMenu();
+					break;
+			}
+		}
+
+		public void AddCustomerFirstName(Quotation quotation)
+		{
+			_logger.LogInformation("Add Customer First Name Menu Loaded");
+			
+			var name = AnsiConsole.Prompt(
+				new TextPrompt<string>("[green]First Name:[/]"));
+			
+			quotation.Customer.FirstName = name;
+			
+			_logger.LogDebug("Quotation Property Customer FirstName set to: {menu}", name);
+			
+			_displayService.UpdateCustomerTableCells(1, quotation.Customer.FirstName);
+			AddCustomerMenu(quotation);
+		}
+
+		public void AddCustomerLastName(Quotation quotation)
+		{
+			
+			_logger.LogInformation("Add Customer Last Name Menu Loaded");
+			
+			var name = AnsiConsole.Prompt(
+				new TextPrompt<string>("[green]Surname:[/]"));
+			
+			quotation.Customer.Surname = name;
+			
+			_logger.LogDebug("Quotation Property Customer Surname set to: {menu}", name);
+			
+			_displayService.UpdateCustomerTableCells(2, quotation.Customer.Surname);
+			AddCustomerMenu(quotation);
+		}
+
+		public void AddCustomerStreet(Quotation quotation)
+		{
+			
+			_logger.LogInformation("Add Customer Street Menu Loaded");
+			
+			var street = AnsiConsole.Prompt(
+				new TextPrompt<string>("[green]Address Street:[/]"));
+			
+			quotation.Customer.Street = street;
+			
+			_logger.LogDebug("Quotation Property Customer Street set to: {menu}", street);
+			
+			_displayService.UpdateCustomerTableCells(4, quotation.Customer.Street);
+			AddCustomerMenu(quotation);
+		}
+
+		public void AddCustomerCounty(Quotation quotation)
+		{
+			
+			_logger.LogInformation("Add Customer County Menu Loaded");
+			
+			var county = AnsiConsole.Prompt(
+				new TextPrompt<string>("[green]Address County:[/]"));
+			
+			quotation.Customer.County = county;
+			
+			_logger.LogDebug("Quotation Property Customer County set to: {menu}", county);
+			
+			_displayService.UpdateCustomerTableCells(5, quotation.Customer.County);
+			AddCustomerMenu(quotation);
+		}
+
+		public void AddCustomerEirCode(Quotation quotation)
+		{
+			
+			_logger.LogInformation("Add Customer Eircode Menu Loaded");
+			
+			var eircode = AnsiConsole.Prompt(
+				new TextPrompt<string>("[green]Address EirCode:[/]"));
+			
+			quotation.Customer.Eircode = eircode;
+			
+			_logger.LogDebug("Quotation Property Customer Eircode set to: {menu}", eircode);
+			
+			_displayService.UpdateCustomerTableCells(6, quotation.Customer.Eircode);
+			AddCustomerMenu(quotation);
+		}
+
+		public void AddCustomerPhoneNumber(Quotation quotation)
+		{
+			
+			_logger.LogInformation("Add Customer Phone Number Menu Loaded");
+			
+			var phoneNumber = AnsiConsole.Prompt(
+				new TextPrompt<string>("[green]Phone Number:[/]"));
+			
+			quotation.Customer.PhoneNumber = phoneNumber;
+			
+			_logger.LogDebug("Quotation Property Customer PhoneNumber set to: {menu}", phoneNumber);
+			
+			_displayService.UpdateCustomerTableCells(8, quotation.Customer.PhoneNumber);
+			AddCustomerMenu(quotation);
+		}
+
+		public void SearchQuotationMenu()
+		{
+			
+			_logger.LogInformation("Search Quotation Menu Loaded");
+			
+			_displayService.MenuFiglet();
+			_displayService.RuleRedLeft("Search for Quotation");
+			
+			const string prompt = "What criteria would you like to search by?";
+			var menuItems = new [] { "Search By ID", "Main Menu" };
+			
+			var menuOption = DisplayMenuPrompt(prompt, menuItems);
+
+			switch (menuOption)
+			{
+				case "Search By ID":
+					SearchQuotationMenuId();
+					break;
+				case "Main Menu":
+					DisplayMainMenu();
+					break;
+			}
+		}
+
+		public async void SearchQuotationMenuId()
+		{
+			
+			_logger.LogInformation("Search Quotation Menu ID Loaded");
+			
+			_displayService.MenuFiglet();
+			_displayService.RuleRedLeft("Search for Quotation - ID");
+			
+			var id = AnsiConsole.Prompt(
+				new TextPrompt<int>("[green]Quotation ID:[/]"));
+			
+			_displayService.LoadingPrompt();
+			var quotation = await _quotationService.GetQuotationAsync(id);
+			
+			if (quotation == null)
+			{
+				
+				_logger.LogError("Quotation ID not found");
+				
+				if (!AnsiConsole.Confirm("[red]Quotation not found - Try another ID?[/]"))
+				{
+					SearchQuotationMenu();
+				}
+
+				SearchPolicyMenuId();
+			}
+			else
+			{
+				_displayService.LoadingPrompt();
+				ConvertQuotationToPolicy(quotation);
 			}
 			
-			//DisplayMainMenu();
+		}
 
-			var quotation = Persistent.CurrentQuotation;
-			//_quotationService.SaveQuotationAsync(quotation);
-			// reply with a confirmation message
-			AnsiConsole.WriteLine("[green]Quotation saved to database[/]");
+		public void SearchPolicyMenu()
+		{
+			
+			_logger.LogInformation("Search Policy Menu Loaded");
+			
+			_displayService.MenuFiglet();
+			_displayService.RuleRedLeft("Search for Policy");
+
+			const string prompt = "What criteria would you like to search for:";
+			var menuItems = new [] { "Search By ID", "Main Menu" };
+			
+			var menuOption = DisplayMenuPrompt(prompt, menuItems);
+
+			switch (menuOption)
+			{
+				case "Search By ID":
+					SearchPolicyMenuId();
+					break;
+				case "Main Menu":
+					DisplayMainMenu();
+					break;
+			}
+		}
+
+		public async void SearchPolicyMenuId()
+		{
+			
+			_logger.LogInformation("Search Policy Menu ID Loaded");
+			
+			_displayService.MenuFiglet();
+			_displayService.RuleRedLeft("Search for Policy - ID");
+			
+			var id = AnsiConsole.Prompt(
+				new TextPrompt<int>("[green]Policy ID:[/]"));
+			
+			_displayService.LoadingPrompt();
+			var policy = await _quotationService.GetPolicyAsync(id);
+
+			if (policy == null)
+			{
+				
+				_logger.LogError("Policy ID not found");
+				
+				if (!AnsiConsole.Confirm("[red]Policy not found - Try another ID?[/]"))
+				{
+					SearchPolicyMenu();
+				}
+
+				SearchPolicyMenuId();
+			}
+			
+			_displayService.RenderQuotationTable(policy);
+			
+			_logger.LogInformation("Policy Loaded.. Menu Loaded");
+
+			const string prompt = "What criteria would you like to search for:";
+			var menuItems = new [] { "Search By ID", "Generate Policy Certificate", "Main Menu" };
+			
+			var menuOption = DisplayMenuPrompt(prompt, menuItems);
+
+			switch (menuOption)
+			{
+				case "Search By ID":
+					SearchPolicyMenuId();
+					break;
+				case "Generate Policy Certificate":
+					_fileService.CreateCertificate(policy);
+					DisplayMainMenu();
+					break;
+				case "Main Menu":
+					DisplayMainMenu();
+					break;
+			}
+		}
+
+		public void ConvertQuotationToPolicy(Quotation quotation)
+		{
+			
+			_logger.LogInformation("Convert Quotation to Policy Loaded");
+			
+			_displayService.RenderQuotationTable(quotation);
+			_displayService.RuleRedLeft("Convert Quotation to Policy");
+			
+			const string prompt = "Would you like to convert this quotation to a policy?";
+			var menuItems = new [] { "Convert to Policy", "Main Menu" };
+			
+			var menuOption = DisplayMenuPrompt(prompt, menuItems);
+
+			switch (menuOption)
+			{
+				case "Convert to Policy":
+					_displayService.LoadingPrompt();
+					var updatedPolicy = _quotationService.UpdateQuotationAsync(quotation).Result;
+					GeneratePolicyCertificate(updatedPolicy);
+					break;
+				case "Main Menu":
+					DisplayMainMenu();
+					break;
+			}
+		}
+
+		public void GeneratePolicyCertificate(Quotation quotation)
+		{
+			
+			_logger.LogInformation("Generate Policy Certificate Loaded");
+			
+			_displayService.RenderQuotationTable(quotation);
+			_displayService.RuleRedLeft("Create Policy Certificate");
+
+			const string prompt = "Would you like to generate a certificate for the policy?";
+			var menuItems = new [] { "Generate Certificate", "Main Menu" };
+			
+			var menuOption = DisplayMenuPrompt(prompt, menuItems);
+
+			switch (menuOption)
+			{
+				case "Generate Certificate":
+					_displayService.LoadingPrompt();
+					_fileService.CreateCertificate(quotation);
+					DisplayMainMenu();
+					break;
+				case "Main Menu":
+					DisplayMainMenu();
+					break;
+			}
+		}
+
+		public void ReportsMenu()
+		{
+			
+			_logger.LogInformation("Reports Menu Loaded");
+			
+			_displayService.MenuFiglet();
+			_displayService.RuleRedLeft("Generate Reports");
+
+			const string prompt = "Please select a menu option:";
+			var menuItems = new [] { "Expiring Policies", "Expiring Quotations", "Main Menu" };
+			
+			var menuItem = DisplayMenuPrompt(prompt, menuItems);
+
+			switch (menuItem)
+			{
+				case "Expiring Policies":
+					SearchExpiringPoliciesMenu();
+					break;
+				case "Expiring Quotations":
+					SearchExpiringQuotationsMenu();
+					break;
+				case "Main Menu":
+					DisplayMainMenu();
+					break;
+			}
+		}
+
+		public void SearchExpiringQuotationsMenu()
+		{
+			
+			_logger.LogInformation("Search Expiring Quotations Menu Loaded");
+			
+			_displayService.LoadingPrompt();
+			var quotations = _quotationService.GetExpiringQuotationsAsync().Result;
+			_displayService.RenderExpiringTable(quotations);
+			_displayService.RuleRedLeft("Quotations Expiring (Next 3 Days)");
+
+			const string prompt = "Please select a menu option";
+			var menuItems = new [] { "Save Report", "Back", "Main Menu" };
+			
+			var menuItem = DisplayMenuPrompt(prompt, menuItems);
+
+			switch (menuItem)
+			{
+				case "Save Report":
+					_fileService.CreateExpiringSoonReport(quotations, "Quotations Expiring (Next 3 Days)");
+					DisplayMainMenu();
+					break;
+				case "Back":
+					ReportsMenu();
+					break;
+				case "Main Menu":
+					DisplayMainMenu();
+					break;
+			}
+		}
+
+		public void SearchExpiringPoliciesMenu()
+		{
+			
+			_logger.LogInformation("Search Expiring Policies Menu Loaded");
+			
+			_displayService.LoadingPrompt();
+			var policies = _quotationService.GetExpiringPoliciesAsync().Result;
+			_displayService.RenderExpiringTable(policies);
+			_displayService.RuleRedLeft("Policies Expiring (Next 30 Days)");
+
+			const string prompt = "Please select a menu option";
+			var menuItems = new [] { "Save Report", "Back", "Main Menu" };
+			var menuItem = DisplayMenuPrompt(prompt, menuItems);
+
+			switch (menuItem)
+			{
+				case "Save Report":
+					_fileService.CreateExpiringSoonReport(policies, "Policies Expiring (Next 30 Days)");
+					DisplayMainMenu();
+					break;
+				case "Back":
+					ReportsMenu();
+					break;
+				case "Main Menu":
+					DisplayMainMenu();
+					break;
+			}
+		}
+
+		public string DisplayMenuPrompt(string prompt, string[] menuOptions)
+		{
+			var menuSelection = AnsiConsole.Prompt(
+				new SelectionPrompt<string>()
+					.Title($"{prompt}:")
+					.PageSize(10)
+					.MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
+					.AddChoices(menuOptions));
+
+			return menuSelection;
 		}
 	}
 }

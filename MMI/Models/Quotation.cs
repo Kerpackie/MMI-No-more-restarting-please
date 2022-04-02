@@ -13,26 +13,29 @@ namespace MMI.Models
 		public string InsuranceCategory { get; set; } = string.Empty;
 		public int TotalCost { get; set; } = 1000;
 		public DateTime ValidUntil { get; set; }
+		public bool IsPolicy { get; set; } = false;
+		public Customer Customer { get; set; }
 		
 		public void QuotationTotalCost()
 		{
-			// var totalCost = 1000;
+			var totalCost = 1000;
+			totalCost += SexCost();
+			totalCost += AgeCost();
+			totalCost += CountyCost();
+			totalCost += ModelCost();
+			totalCost += EmissionsCost();
+			totalCost += InsuranceCategoryCost();
+			
+			TotalCost = totalCost;
+			
+			// var sexCost = SexCost();
+			// var ageCost = AgeCost();
+			// var countyCost = CountyCost();
+			// var modelCost = ModelCost();
+			// var emissionsCost = EmissionsCost();
+			// var insuranceCategoryCost = InsuranceCategoryCost();
 			//
-			// totalCost += SexCost();
-			// totalCost += AgeCost();
-			// totalCost += CountyCost();
-			// totalCost += ModelCost();
-			// totalCost += EmissionsCost();
-			// totalCost += InsuranceCategoryCost();
-			
-			var sexCost = SexCost();
-			var ageCost = AgeCost();
-			var countyCost = CountyCost();
-			var modelCost = ModelCost();
-			var emissionsCost = EmissionsCost();
-			var insuranceCategoryCost = InsuranceCategoryCost();
-			
-			TotalCost = 1000 + ageCost + sexCost + countyCost + modelCost + emissionsCost + insuranceCategoryCost;
+			// TotalCost = 1000 + ageCost + sexCost + countyCost + modelCost + emissionsCost + insuranceCategoryCost;
 			//TotalCost = 1000 + ageCost;
 			ValidUntil = DateTime.Today.AddDays(31);
 		}
