@@ -11,12 +11,19 @@ namespace MMI.Services.FileService
 	{
 		private readonly ILogger<FileService> _logger;
 
-
+		/// <summary>
+		/// The constructor for the file service
+		/// </summary>
+		/// <param name="logger">The logger DI Container</param>
 		public FileService(ILogger<FileService> logger)
 		{
 			_logger = logger;
 		}
 		
+		/// <summary>
+		/// Generates a PDF file from a <see cref="Quotation"/>
+		/// </summary>
+		/// <param name="quotation">The policy to be generated</param>
 		public void CreateCertificate(Quotation quotation)
 		{
 			_logger.LogInformation("Creating certificate for policy {@quotation}", quotation.Id);
@@ -64,6 +71,11 @@ namespace MMI.Services.FileService
 			GeneratePdf(html, fileName);
 		}
 
+		/// <summary>
+		/// Generates a PDF file from a <see cref="List{T}"/> of <see cref="Quotation"/>
+		/// </summary>
+		/// <param name="quotations">The list of <see cref="Quotation"/> to be printed</param>
+		/// <param name="reportType">The type of report to be generated</param>
 		public void CreateExpiringSoonReport(List<Quotation> quotations, string reportType)
 		{
 			
@@ -104,6 +116,11 @@ namespace MMI.Services.FileService
 			GeneratePdf(html, fileName);
 		}
 
+		/// <summary>
+		/// The method that generates the PDF file
+		/// </summary>
+		/// <param name="html">The html string representing the PDF's content</param>
+		/// <param name="fileName">The filename to be generated</param>
 		public void GeneratePdf(string html, string fileName)
 		{
 			_logger.LogInformation("Initializing PDF Generation");

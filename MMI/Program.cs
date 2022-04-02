@@ -17,9 +17,11 @@ namespace MMI
 	{
 		static async Task Main(string[] args)
 		{
+			// Config builder
 			var builder = new ConfigurationBuilder();
 			BuildConfig(builder);
 
+			// Logging initializer
 			Log.Logger = new LoggerConfiguration()
 				.ReadFrom.Configuration(builder.Build())
 				.Enrich.FromLogContext()
@@ -29,6 +31,7 @@ namespace MMI
 
 			Log.Logger.Information("--- MMI started ---");
 
+			// Host builder and services
 			var host = Host.CreateDefaultBuilder()
 				.ConfigureServices((context, services) =>
 				{
@@ -45,6 +48,7 @@ namespace MMI
 			svc.Run();
 		}
 
+		// Config builder
 		static void BuildConfig(IConfigurationBuilder builder)
 		{
 			builder.SetBasePath(Directory.GetCurrentDirectory())

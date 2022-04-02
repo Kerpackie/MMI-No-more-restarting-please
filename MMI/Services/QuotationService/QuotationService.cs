@@ -11,11 +11,20 @@ namespace MMI.Services.QuotationService
 	{
 		private readonly ILogger<QuotationService> _logger;
 
+		/// <summary>
+		/// Constructor for QuotationService
+		/// </summary>
+		/// <param name="logger">The logger DI Container</param>
 		public QuotationService(ILogger<QuotationService> logger)
 		{
 			_logger = logger;
 		}
 		
+		/// <summary>
+		/// Gets a quotation from the API
+		/// </summary>
+		/// <param name="id">The id to be passed to the api</param>
+		/// <returns>A Completed task containing the result of a Quotation.</returns>
 		public async Task<Quotation> GetQuotationAsync(int id)
 		{
 			_logger.LogInformation("Getting quotation for id: {id}", id);
@@ -45,6 +54,11 @@ namespace MMI.Services.QuotationService
 			return quotation.Data;
 		}
 
+		/// <summary>
+		/// Gets a policy from the API
+		/// </summary>
+		/// <param name="id">The Id to be passed to the api</param>
+		/// <returns>A completed task containing the result of a quotation, which represents the policy</returns>
 		public async Task<Quotation> GetPolicyAsync(int id)
 		{
 			
@@ -76,6 +90,11 @@ namespace MMI.Services.QuotationService
 			return quotation.Data;
 		}
 
+		/// <summary>
+		/// Saves a quotation to the API - this is a POST request
+		/// </summary>
+		/// <param name="quotation">The quotation object to be sent to the API</param>
+		/// <returns>The saved quotation object from the server</returns>
 		public async Task<Quotation> SaveQuotationAsync(Quotation quotation)
 		{
 			
@@ -103,6 +122,11 @@ namespace MMI.Services.QuotationService
 			return returnedQuotation.Data;
 		}
 
+		/// <summary>
+		/// Updates a quotation to be a policy - this is a PUT request
+		/// </summary>
+		/// <param name="quotation">The quotation that should be converted to a policy</param>
+		/// <returns>The updated quotation object from the server</returns>
 		public async Task<Quotation> UpdateQuotationAsync(Quotation quotation)
 		{
 			_logger.LogInformation("Updating quotation for id: {id}", quotation.Id);
@@ -128,6 +152,10 @@ namespace MMI.Services.QuotationService
 			return returnedQuotation.Data;
 		}
 
+		/// <summary>
+		/// Gets a list of all the quotations from the API which are expiring within 3 days.
+		/// </summary>
+		/// <returns>A <see cref="List{T}"/> of expiring <see cref="Quotation"/></returns>
 		public async Task<List<Quotation>> GetExpiringQuotationsAsync()
 		{ 
 			
@@ -154,6 +182,10 @@ namespace MMI.Services.QuotationService
 			return quotations.Data;
 		}
 
+		/// <summary>
+		/// Gets a list of all the policies from the API which are expiring within 30 days.
+		/// </summary>
+		/// <returns>A <see cref="List{T}"/> of expiring <see cref="Quotation"/> representing the policies.</returns>
 		public async Task<List<Quotation>> GetExpiringPoliciesAsync()
 		{
 			

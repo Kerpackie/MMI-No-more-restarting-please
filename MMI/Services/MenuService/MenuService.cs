@@ -17,6 +17,13 @@ namespace MMI.Services.MenuService
 		private readonly IFileService _fileService;
 		private readonly ILogger<MenuService> _logger;
 
+		/// <summary>
+		/// The constructor of the menu service
+		/// </summary>
+		/// <param name="displayService">The Display Service DI Container</param>
+		/// <param name="quotationService">The Quotation Service DI Container</param>
+		/// <param name="fileService">The File Service DI Container</param>
+		/// <param name="logger">The logger DI Container</param>
 		public MenuService(IDisplayService displayService,
 			IQuotationService quotationService,
 			IFileService fileService, 
@@ -28,6 +35,9 @@ namespace MMI.Services.MenuService
 			_logger = logger;
 		}
 		
+		/// <summary>
+		/// Displays the main menu
+		/// </summary>
 		public void DisplayMainMenu()
 		{
 			_logger.LogInformation("Displaying main menu");
@@ -45,6 +55,10 @@ namespace MMI.Services.MenuService
 			MainMenuRouting(menu);
 		}
 
+		/// <summary>
+		/// Routing for the MainMenu() Method.
+		/// </summary>
+		/// <param name="menuOption">The option received from MainMenu()</param>
 		public void MainMenuRouting(string menuOption)
 		{
 			switch (menuOption)
@@ -69,6 +83,10 @@ namespace MMI.Services.MenuService
 			}
 		}
 
+		/// <summary>
+		/// The Main Menu for Quotation Criteria Selection
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void SelectQuotationCriteriaMenu(Quotation quotation)
 		{
 			_logger.LogInformation("Displaying quotation criteria menu");
@@ -113,6 +131,10 @@ namespace MMI.Services.MenuService
 			}
 		}
 
+		/// <summary>
+		/// The Sex Selection Menu for <see cref="Quotation"/> Criteria
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void CriteriaSelectionMenuGender(Quotation quotation)
 		{
 			_logger.LogInformation("Displaying Sex Selection Menu");
@@ -132,6 +154,10 @@ namespace MMI.Services.MenuService
 			SelectQuotationCriteriaMenu(quotation);
 		}
 
+		/// <summary>
+		/// The Age Selection Prompt for <see cref="Quotation"/> Criteria
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void CriteriaSelectionMenuAge(Quotation quotation)
 		{
 			_logger.LogInformation("Displaying Age Selection Menu");
@@ -158,6 +184,10 @@ namespace MMI.Services.MenuService
 			SelectQuotationCriteriaMenu(quotation);
 		}
 
+		/// <summary>
+		/// The County Selection Menu for <see cref="Quotation"/> Criteria
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void CriteriaSelectionMenuCounty(Quotation quotation)
 		{
 			_logger.LogInformation("Displaying County Selection Menu");
@@ -176,6 +206,10 @@ namespace MMI.Services.MenuService
 			SelectQuotationCriteriaMenu(quotation);
 		}
 
+		/// <summary>
+		/// The Vehicle Model Selection Menu for <see cref="Quotation"/> Criteria
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void CriteriaSelectionMenuMake(Quotation quotation)
 		{
 			_logger.LogInformation("Displaying Make Selection Menu");
@@ -223,6 +257,10 @@ namespace MMI.Services.MenuService
 			SelectQuotationCriteriaMenu(quotation);
 		}
 
+		/// <summary>
+		/// The Emissions Class Selection Menu for <see cref="Quotation"/> Criteria
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void CriteriaSelectionMenuEmissionsCategory(Quotation quotation)
 		{
 			_logger.LogInformation("Displaying Emissions Category Selection Menu");
@@ -241,6 +279,10 @@ namespace MMI.Services.MenuService
 			SelectQuotationCriteriaMenu(quotation);
 		}
 
+		/// <summary>
+		/// The Insurance Category Selection Menu for <see cref="Quotation"/> Criteria
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void CriteriaSelectionMenuInsuranceCategory(Quotation quotation)
 		{
 			_logger.LogInformation("Displaying Insurance Category Selection Menu");
@@ -259,6 +301,11 @@ namespace MMI.Services.MenuService
 			SelectQuotationCriteriaMenu(quotation);
 		}
 
+		/// <summary>
+		/// Prompt to progress from <see cref="Quotation"/> to the <see cref="Customer"/> Generation Menu
+		/// to save the <see cref="Quotation"/>.
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public async void SaveQuotationToDatabase(Quotation quotation)
 		{
 			_logger.LogInformation("Save Quotation to Database Menu Loaded");
@@ -273,6 +320,10 @@ namespace MMI.Services.MenuService
 			ConvertQuotationToPolicy(savedQuotation);
 		}
 
+		/// <summary>
+		/// The Main <see cref="Customer"/> Navigation Menu
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void AddCustomerMenu(Quotation quotation)
 		{
 			_logger.LogInformation("Add Customer Menu Loaded");
@@ -315,6 +366,10 @@ namespace MMI.Services.MenuService
 			}
 		}
 
+		/// <summary>
+		/// Prompt for the <see cref="Customer"/> First Name
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void AddCustomerFirstName(Quotation quotation)
 		{
 			_logger.LogInformation("Add Customer First Name Menu Loaded");
@@ -330,6 +385,10 @@ namespace MMI.Services.MenuService
 			AddCustomerMenu(quotation);
 		}
 
+		/// <summary>
+		/// Prompt for the <see cref="Customer"/> Last Name
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void AddCustomerLastName(Quotation quotation)
 		{
 			
@@ -346,6 +405,10 @@ namespace MMI.Services.MenuService
 			AddCustomerMenu(quotation);
 		}
 
+		/// <summary>
+		/// Prompt for the <see cref="Customer"/> Street
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void AddCustomerStreet(Quotation quotation)
 		{
 			
@@ -362,6 +425,10 @@ namespace MMI.Services.MenuService
 			AddCustomerMenu(quotation);
 		}
 
+		/// <summary>
+		/// Prompt for the <see cref="Customer"/> County
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void AddCustomerCounty(Quotation quotation)
 		{
 			
@@ -378,6 +445,10 @@ namespace MMI.Services.MenuService
 			AddCustomerMenu(quotation);
 		}
 
+		/// <summary>
+		/// Prompt for the <see cref="Customer"/> EirCode
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void AddCustomerEirCode(Quotation quotation)
 		{
 			
@@ -394,6 +465,10 @@ namespace MMI.Services.MenuService
 			AddCustomerMenu(quotation);
 		}
 
+		/// <summary>
+		/// Prompt for the <see cref="Customer"/> Phone Number
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void AddCustomerPhoneNumber(Quotation quotation)
 		{
 			
@@ -410,6 +485,9 @@ namespace MMI.Services.MenuService
 			AddCustomerMenu(quotation);
 		}
 
+		/// <summary>
+		/// Main Menu for selecting what criteria to search for a <see cref="Quotation"/> by
+		/// </summary>
 		public void SearchQuotationMenu()
 		{
 			
@@ -434,6 +512,9 @@ namespace MMI.Services.MenuService
 			}
 		}
 
+		/// <summary>
+		/// The Search Quotation Menu for searching by <see cref="Quotation"/> ID
+		/// </summary>
 		public async void SearchQuotationMenuId()
 		{
 			
@@ -468,6 +549,9 @@ namespace MMI.Services.MenuService
 			
 		}
 
+		/// <summary>
+		/// Main Menu for selecting what criteria to search for a <see cref="Quotation"/> that represents a policy by
+		/// </summary>
 		public void SearchPolicyMenu()
 		{
 			
@@ -492,6 +576,9 @@ namespace MMI.Services.MenuService
 			}
 		}
 
+		/// <summary>
+		/// Search Policy Menu for searching by <see cref="Quotation"/> ID
+		/// </summary>
 		public async void SearchPolicyMenuId()
 		{
 			
@@ -543,6 +630,10 @@ namespace MMI.Services.MenuService
 			}
 		}
 
+		/// <summary>
+		/// Menu to Convert a <see cref="Quotation"/>'s IsPolicy to true and extends the Valid Until date
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void ConvertQuotationToPolicy(Quotation quotation)
 		{
 			
@@ -569,6 +660,10 @@ namespace MMI.Services.MenuService
 			}
 		}
 
+		/// <summary>
+		/// Menu to Generate a new PDF Certificate for a Policy
+		/// </summary>
+		/// <param name="quotation">The current instantiated <see cref="Quotation"/> object</param>
 		public void GeneratePolicyCertificate(Quotation quotation)
 		{
 			
@@ -595,6 +690,9 @@ namespace MMI.Services.MenuService
 			}
 		}
 
+		/// <summary>
+		/// The Main Menu for Navigation of reports generation
+		/// </summary>
 		public void ReportsMenu()
 		{
 			
@@ -622,6 +720,9 @@ namespace MMI.Services.MenuService
 			}
 		}
 
+		/// <summary>
+		/// Menu for handling the search of Expiring Quotations
+		/// </summary>
 		public void SearchExpiringQuotationsMenu()
 		{
 			
@@ -652,6 +753,9 @@ namespace MMI.Services.MenuService
 			}
 		}
 
+		/// <summary>
+		/// Menu for handling the search of Expiring Policies
+		/// </summary>
 		public void SearchExpiringPoliciesMenu()
 		{
 			
@@ -681,6 +785,12 @@ namespace MMI.Services.MenuService
 			}
 		}
 
+		/// <summary>
+		/// Displays a prompt for the user to select a menu option
+		/// </summary>
+		/// <param name="prompt">The prompt to be shown to the user in the menu</param>
+		/// <param name="menuOptions">An array of menu options.</param>
+		/// <returns>The selected menu option.</returns>
 		public string DisplayMenuPrompt(string prompt, string[] menuOptions)
 		{
 			var menuSelection = AnsiConsole.Prompt(
