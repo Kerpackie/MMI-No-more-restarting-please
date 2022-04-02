@@ -2,19 +2,16 @@
 
 namespace MMI.Services.MenuService
 {
+	/// <summary>
+	/// The interface for the menu service
+	/// </summary>
 	public interface IMenuService
 	{
-		// Menu Figlet
-		//void MenuFiglet();
-		
 		// Display Menu
 		public void DisplayMainMenu();
-		//Task DisplayCustomerSearchMenu();
 		
 		// Routing
 		public void MainMenuRouting(string menuOption);
-		//void GenerateQuotationRouting(string menuOption);
-
 		
 		// Generate Quotation
 		public void SelectQuotationCriteriaMenu(Quotation quotation);

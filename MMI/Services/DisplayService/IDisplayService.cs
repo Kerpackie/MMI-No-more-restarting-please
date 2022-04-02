@@ -4,6 +4,9 @@ using Spectre.Console;
 
 namespace MMI.Services.DisplayService
 {
+	/// <summary>
+	/// The interface for the display service.
+	/// </summary>
 	public interface IDisplayService
 	{
 		void MenuFiglet();

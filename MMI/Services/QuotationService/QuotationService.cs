@@ -7,6 +7,9 @@ using RestSharp;
 
 namespace MMI.Services.QuotationService
 {
+	/// <summary>
+	/// The implementation of <see cref="IQuotationService"/> using the Quotation API.
+	/// </summary>
 	public class QuotationService : IQuotationService
 	{
 		private readonly ILogger<QuotationService> _logger;

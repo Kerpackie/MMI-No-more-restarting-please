@@ -5,6 +5,9 @@ using MMI.Services.MenuService;
 
 namespace MMI.Services
 {
+	/// <summary>
+	/// Handles running the application.
+	/// </summary>
 	public class GreetingService : IGreetingService
 	{
 		private readonly IMenuService _menuService;

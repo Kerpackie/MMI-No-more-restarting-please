@@ -13,6 +13,9 @@ using Serilog;
 
 namespace MMI
 {
+	/// <summary>
+	/// The program class, all standard stuff is here.
+	/// </summary>
 	class Program
 	{
 		static async Task Main(string[] args)

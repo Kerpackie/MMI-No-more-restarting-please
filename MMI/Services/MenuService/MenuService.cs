@@ -10,6 +10,10 @@ using Spectre.Console;
 
 namespace MMI.Services.MenuService
 {
+	/// <summary>
+	/// The implementation of the <see cref="IMenuService"/> interface.
+	/// Handles the menu navigation and the menu display.
+	/// </summary>
 	public class MenuService : IMenuService
 	{
 		private readonly IDisplayService _displayService;

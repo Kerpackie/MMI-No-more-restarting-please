@@ -2,20 +2,60 @@
 
 namespace MMI.Models
 {
+	/// <summary>
+	/// The Quotation Model, which is used to hold the Quotation data.
+	/// Can also be used to represent a Policy.
+	/// </summary>
 	public class Quotation
 	{
+		/// <summary>
+		/// The Quotation ID.
+		/// </summary>
 		public int Id { get; set; }
+		/// <summary>
+		/// The Sex Criteria
+		/// </summary>
 		public string Sex { get; set; } = string.Empty;
+		/// <summary>
+		/// The Age Criteria
+		/// </summary>
 		public int Age { get; set; }
+		/// <summary>
+		/// The County Criteria
+		/// </summary>
 		public string County { get; set; } = string.Empty;
+		/// <summary>
+		/// The Vehicle Model Criteria
+		/// </summary>
 		public string Model { get; set; } = string.Empty;
+		/// <summary>
+		/// The Emissions Class Criteria
+		/// </summary>
 		public string Emissions { get; set; } = string.Empty;
+		/// <summary>
+		/// The Insurance Category Criteria
+		/// </summary>
 		public string InsuranceCategory { get; set; } = string.Empty;
+		/// <summary>
+		/// The total quotation cost
+		/// </summary>
 		public int TotalCost { get; set; } = 1000;
+		/// <summary>
+		/// The date that the quotation is valid until
+		/// </summary>
 		public DateTime ValidUntil { get; set; }
+		/// <summary>
+		/// Represents if the quotation is a policy or not
+		/// </summary>
 		public bool IsPolicy { get; set; } = false;
+		/// <summary>
+		/// The customer that the quotation is belongs to
+		/// </summary>
 		public Customer Customer { get; set; }
 		
+		/// <summary>
+		/// Calculates the total cost of the quotation.
+		/// </summary>
 		public void QuotationTotalCost()
 		{
 			var totalCost = 1000;
@@ -28,18 +68,11 @@ namespace MMI.Models
 			
 			TotalCost = totalCost;
 			
-			// var sexCost = SexCost();
-			// var ageCost = AgeCost();
-			// var countyCost = CountyCost();
-			// var modelCost = ModelCost();
-			// var emissionsCost = EmissionsCost();
-			// var insuranceCategoryCost = InsuranceCategoryCost();
-			//
-			// TotalCost = 1000 + ageCost + sexCost + countyCost + modelCost + emissionsCost + insuranceCategoryCost;
-			//TotalCost = 1000 + ageCost;
 			ValidUntil = DateTime.Today.AddDays(31);
 		}
 		
+		// Private methods that are used to calculate the total cost of the quotation
+		// They use the Quotation's properties to calculate the cost.
 		private int SexCost()
 		{
 			return Sex == "Male" ? 1000 : 800;

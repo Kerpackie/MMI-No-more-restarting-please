@@ -5,15 +5,25 @@ using Spectre.Console;
 
 namespace MMI.Services.DisplayService
 {
+	/// <summary>
+	/// The implementation class of the <see cref="IDisplayService"/> interface.
+	/// </summary>
 	public class DisplayService : IDisplayService
 	{
 		private readonly ILogger<DisplayService> _logger;
 
+		/// <summary>
+		/// The constructor of the <see cref="DisplayService"/> class.
+		/// </summary>
+		/// <param name="logger">The Logger DI Container</param>
 		public DisplayService(ILogger<DisplayService> logger)
 		{
 			_logger = logger;
 		}
 		
+		/// <summary>
+		/// Displays the Figlet text.
+		/// </summary>
 		public void MenuFiglet()
 		{
 			_logger.LogDebug("Clearing screen");
@@ -26,6 +36,10 @@ namespace MMI.Services.DisplayService
 					.Color(Color.Red));
 		}
 
+		/// <summary>
+		/// Sets up a table to handle the display of <see cref="Quotation"/> data.
+		/// </summary>
+		/// <param name="table">A table for quotation data</param>
 		public void TableInit(Table table)
 		{
 			_logger.LogDebug("Adding table headers");
@@ -42,9 +56,11 @@ namespace MMI.Services.DisplayService
 			table.AddRow("Emissions Class", string.Empty);
 			table.AddRow("Insurance Category", string.Empty);
 			table.AddRow("Total Cost:", string.Empty);
-
 		}
 		
+		/// <summary>
+		/// Renders the Quotation datatable to the console.
+		/// </summary>
 		public void RenderQuotationCriteriaTable()
 		{
 			MenuFiglet();
@@ -53,6 +69,9 @@ namespace MMI.Services.DisplayService
 			AnsiConsole.Write(table);
 		}
 
+		/// <summary>
+		/// Renders the Customer datatable to the console.
+		/// </summary>
 		public void RenderCustomerTable()
 		{
 			MenuFiglet();
@@ -61,6 +80,9 @@ namespace MMI.Services.DisplayService
 			AnsiConsole.Write(table);
 		}
 
+		/// <summary>
+		/// Removes all rows from the Quotation datatable.
+		/// </summary>
 		public void QuotationTableClear()
 		{
 			var table = Persistent.QuotationTable;
@@ -73,6 +95,12 @@ namespace MMI.Services.DisplayService
 			}
 		}
 
+		/// <summary>
+		/// Updates a cell in the Quotation datatable.
+		/// </summary>
+		/// <param name="row">An int representing the row on the table, starting at 0.</param>
+		/// <param name="menuItem">The value for the cell to be updated with.</param>
+		/// <param name="quotation">The quotation to retrieve the current total cost from</param>
 		public void UpdateQuotationTableCells(int row, string menuItem, Quotation quotation)
 		{
 			_logger.LogDebug("Updating Quotation table cell: {row} {menuItem}", row, menuItem);
@@ -83,6 +111,11 @@ namespace MMI.Services.DisplayService
 			table.UpdateCell(6, 1, quotation.TotalCost.ToString());
 		}
 
+		/// <summary>
+		/// Updates a cell in the Customer datatable.
+		/// </summary>
+		/// <param name="row">An int representing the row on the table, starting at 0.</param>
+		/// <param name="menuItem">The value of the cell to be updated with.</param>
 		public void UpdateCustomerTableCells(int row, string menuItem)
 		{
 			_logger.LogDebug("Updating Customer table cell: {row} {menuItem}", row, menuItem);
@@ -90,6 +123,10 @@ namespace MMI.Services.DisplayService
 			table.UpdateCell(row, 1, menuItem);
 		}
 
+		/// <summary>
+		/// Sets up the Customer Table with the required rows and columns.
+		/// </summary>
+		/// <param name="table">The table to be updated.</param>
 		public void CustomerTable(Table table)
 		{
 			_logger.LogDebug("Adding Customer table headers");
@@ -108,6 +145,13 @@ namespace MMI.Services.DisplayService
 			table.AddRow("Mobile:", "");
 		}
 
+		/// <summary>
+		/// Sets up a table to handle the display of <see cref="Quotation"/> data
+		/// and <see cref="Customer"/> data.
+		/// </summary>
+		/// <param name="table">The table to be modified</param>
+		/// <param name="quotation">The <see cref="Quotation"/> object to update the table with.</param>
+		/// <returns>An updated <see cref="Table"/></returns>
 		public Table DisplayQuotation(Table table, Quotation quotation)
 		{
 			_logger.LogInformation("Displaying Quotation");
@@ -142,6 +186,13 @@ namespace MMI.Services.DisplayService
 			return table;
 		}
 
+		/// <summary>
+		/// Displays a table showing a list of expiring <see cref="Quotation"/> objects.
+		/// </summary>
+		/// <param name="table">The table to be updated</param>
+		/// <param name="quotations">A <see cref="List{T}"/> of <see cref="Quotation"/></param>
+		/// <returns>An updated <see cref="Table"/> object that presents <see cref="Quotation"/> or <see cref="Customer"/>
+		/// objects.</returns>
 		public Table DisplayExpiringReport(Table table, List<Quotation> quotations)
 		{
 			_logger.LogInformation("Displaying Expiring Report");
@@ -172,6 +223,10 @@ namespace MMI.Services.DisplayService
 			return table;
 		}
 
+		/// <summary>
+		/// Renders the <see cref="Quotation"/> <see cref="Table"/> object to the Console.
+		/// </summary>
+		/// <param name="quotation"></param>
 		public void RenderQuotationTable(Quotation quotation)
 		{
 			MenuFiglet();
@@ -180,6 +235,10 @@ namespace MMI.Services.DisplayService
 			AnsiConsole.Write(table);
 		}
 
+		/// <summary>
+		/// Renders a <see cref="Table"/> which presents a <see cref="List{T}"/> of expiring <see cref="Quotation"/> objects.
+		/// </summary>
+		/// <param name="quotations">A <see cref="List{T}"/> of <see cref="Quotation"/>s</param>
 		public void RenderExpiringTable(List<Quotation> quotations)
 		{
 			MenuFiglet();
@@ -188,6 +247,10 @@ namespace MMI.Services.DisplayService
 			AnsiConsole.Write(table);
 		}
 
+		/// <summary>
+		/// Prints a red left aligned <see cref="string"/>, using a Line <see cref="Rule"/> to the Console.
+		/// </summary>
+		/// <param name="text">The <see cref="string"/> to be printed in the line.</param>
 		public void RuleRedLeft(string text)
 		{
 			var rule = new Rule($"[red]{text}[/]");
@@ -195,6 +258,10 @@ namespace MMI.Services.DisplayService
 			AnsiConsole.Write(rule);
 		}
 
+		/// <summary>
+		/// Prints a red right aligned <see cref="string"/>, using a Line <see cref="Rule"/> to the Console.
+		/// </summary>
+		/// <param name="text">The <see cref="string"/> to be printed in the line.</param>
 		public void RuleRedRight(string text)
 		{
 			var rule = new Rule($"[red]{text}[/]");
@@ -202,6 +269,10 @@ namespace MMI.Services.DisplayService
 			AnsiConsole.Write(rule);
 		}
 
+		/// <summary>
+		/// Prints a red centre aligned <see cref="string"/>, using a Line <see cref="Rule"/> to the Console.
+		/// </summary>
+		/// <param name="text">The <see cref="string"/> to be printed in the line.</param>
 		public void RuleRedCentre(string text)
 		{
 			var rule = new Rule($"[red]{text}[/]");
@@ -209,6 +280,10 @@ namespace MMI.Services.DisplayService
 			AnsiConsole.Write(rule);
 		}
 
+		/// <summary>
+		/// Prints green a left aligned <see cref="string"/>, using a Line <see cref="Rule"/> to the Console.
+		/// </summary>
+		/// <param name="text">The <see cref="string"/> to be printed in the line.</param>
 		public void RuleGreenLeft(string text)
 		{
 			var rule = new Rule($"[green]{text}[/]");
@@ -216,6 +291,10 @@ namespace MMI.Services.DisplayService
 			AnsiConsole.Write(rule);
 		}
 
+		/// <summary>
+		/// Prints a green right aligned <see cref="string"/>, using a Line <see cref="Rule"/> to the Console.
+		/// </summary>
+		/// <param name="text">The <see cref="string"/> to be printed in the line.</param>
 		public void RuleGreenRight(string text)
 		{
 			var rule = new Rule($"[green]{text}[/]");
@@ -223,6 +302,10 @@ namespace MMI.Services.DisplayService
 			AnsiConsole.Write(rule);
 		}
 
+		/// <summary>
+		/// Prints a green centre aligned <see cref="string"/>, using a Line <see cref="Rule"/> to the Console.
+		/// </summary>
+		/// <param name="text">The <see cref="string"/> to be printed in the line.</param>
 		public void RuleGreenCentre(string text)
 		{
 			var rule = new Rule($"[green]{text}[/]");
@@ -230,6 +313,9 @@ namespace MMI.Services.DisplayService
 			AnsiConsole.Write(rule);
 		}
 
+		/// <summary>
+		/// Prints a <see cref="RuleRedLeft"/> to the Console to inform the user that the application is loading.
+		/// </summary>
 		public void LoadingPrompt()
 		{
 			RuleRedLeft("Loading... This may take a few seconds...");

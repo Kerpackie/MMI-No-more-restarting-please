@@ -4,6 +4,9 @@ using MMI.Models;
 
 namespace MMI.Services.QuotationService
 {
+	/// <summary>
+	/// Interface for Quotation Service
+	/// </summary>
 	public interface IQuotationService
 	{
 		Task<Quotation> GetQuotationAsync(int id);

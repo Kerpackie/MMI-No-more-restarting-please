@@ -7,6 +7,10 @@ using SelectPdf;
 
 namespace MMI.Services.FileService
 {
+	/// <summary>
+	/// The implementation class of <see cref="IFileService"/>.
+	/// Handles the file operations and PDF generation.
+	/// </summary>
 	public class FileService : IFileService
 	{
 		private readonly ILogger<FileService> _logger;

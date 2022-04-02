@@ -12,9 +12,16 @@ namespace MMI
 	/// </summary>
 	public class Persistent
 	{
-		public const string apiUri = "https://mmi20220402025319.azurewebsites.net/api/";
-		public static Quotation CurrentQuotation = new();
+		/// <summary>
+		/// A persistent implementation of a table, that is used to store information about the current quotation that is
+		/// being generated.
+		/// </summary>
 		public static Table QuotationTable = new();
+		
+		/// <summary>
+		/// A persistent implementation of a table, that is used to store information about the current customer that is
+		/// being generated.
+		/// </summary>
 		public static Table CustomerTable = new();
 	}
 }

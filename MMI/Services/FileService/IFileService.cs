@@ -3,6 +3,9 @@ using MMI.Models;
 
 namespace MMI.Services.FileService
 {
+	/// <summary>
+	/// The interface for the FileService
+	/// </summary>
 	public interface IFileService
 	{
 		void CreateCertificate(Quotation quotation);
