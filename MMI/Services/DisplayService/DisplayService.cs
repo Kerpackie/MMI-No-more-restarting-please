@@ -116,7 +116,7 @@ namespace MMI.Services.DisplayService
 		{
 			for (int i = 0; i < Persistent.QuotationTable.Rows.Count - 1; i++)
 			{
-				Persistent.QuotationTable.UpdateCell(i, 1, string.Empty);
+				Persistent.QuotationTable.UpdateCell(i, 1, "");
 			}
 		}
 
