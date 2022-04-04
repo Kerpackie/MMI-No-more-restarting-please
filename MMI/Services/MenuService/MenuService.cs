@@ -317,7 +317,7 @@ namespace MMI.Services.MenuService
 			_displayService.RuleRedLeft("Save Quotation?");
 			if (!AnsiConsole.Confirm("Would you like to save the quotation to the database?"))
 			{
-				SelectQuotationCriteriaMenu(quotation);
+				DisplayMainMenu();
 			}
 
 			var savedQuotation = await _quotationService.SaveQuotationAsync(quotation);
@@ -567,7 +567,7 @@ namespace MMI.Services.MenuService
 			_displayService.MenuFiglet();
 			_displayService.RuleRedLeft("Search for Policy");
 
-			const string prompt = "What criteria would you like to search for:";
+			const string prompt = "What criteria would you like to search for";
 			var menuItems = new [] { "Search By ID", "Main Menu" };
 			
 			var menuOption = DisplayMenuPrompt(prompt, menuItems);
@@ -617,7 +617,7 @@ namespace MMI.Services.MenuService
 			
 			_logger.LogInformation("Policy Loaded.. Menu Loaded");
 
-			const string prompt = "What criteria would you like to search for:";
+			const string prompt = "What criteria would you like to search for";
 			var menuItems = new [] { "Search By ID", "Generate Policy Certificate", "Main Menu" };
 			
 			var menuOption = DisplayMenuPrompt(prompt, menuItems);
