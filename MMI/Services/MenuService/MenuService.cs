@@ -628,6 +628,7 @@ namespace MMI.Services.MenuService
 					SearchPolicyMenuId();
 					break;
 				case "Generate Policy Certificate":
+					_displayService.LoadingPrompt();
 					_fileService.CreateCertificate(policy);
 					DisplayMainMenu();
 					break;

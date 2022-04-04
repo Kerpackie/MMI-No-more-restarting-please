@@ -163,6 +163,7 @@ namespace MMI.Services.DisplayService
 
 			_logger.LogDebug("Adding Quotation rows");
 			// Add some rows
+			table.AddRow("ID:", quotation.Id.ToString());
 			table.AddRow("Sex", quotation.Sex);
 			table.AddRow("Age", quotation.Age.ToString());
 			table.AddRow("County", quotation.County);
