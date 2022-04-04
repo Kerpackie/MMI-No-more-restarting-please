@@ -364,6 +364,9 @@ namespace MMI.Services.MenuService
 				case "Save Quotation":
 					SaveQuotationToDatabase(quotation);
 					break;
+				case "Back":
+					SelectQuotationCriteriaMenu(quotation);
+					break;
 				case "Main Menu":
 					DisplayMainMenu();
 					break;
