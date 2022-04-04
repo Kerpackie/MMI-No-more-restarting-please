@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using MMI.Models;
 using Spectre.Console;
@@ -111,6 +112,14 @@ namespace MMI.Services.DisplayService
 			table.UpdateCell(6, 1, quotation.TotalCost.ToString());
 		}
 
+		public void EmptyQuotationTableCells()
+		{
+			for (int i = 0; i < Persistent.QuotationTable.Rows.Count - 1; i++)
+			{
+				Persistent.QuotationTable.UpdateCell(i, 1, string.Empty);
+			}
+		}
+
 		/// <summary>
 		/// Updates a cell in the Customer datatable.
 		/// </summary>
@@ -122,6 +131,8 @@ namespace MMI.Services.DisplayService
 			var table = Persistent.CustomerTable;
 			table.UpdateCell(row, 1, menuItem);
 		}
+		
+		
 
 		/// <summary>
 		/// Sets up the Customer Table with the required rows and columns.

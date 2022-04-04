@@ -46,6 +46,7 @@ namespace MMI.Services.MenuService
 		{
 			_logger.LogInformation("Displaying main menu");
 			
+			_displayService.QuotationTableClear();
 			_displayService.MenuFiglet();
 			_displayService.RuleRedLeft("Main Menu");
 			

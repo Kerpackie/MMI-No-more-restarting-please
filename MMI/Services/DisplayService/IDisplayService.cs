@@ -15,6 +15,7 @@ namespace MMI.Services.DisplayService
 		void RenderCustomerTable();
 		void QuotationTableClear();
 		void UpdateQuotationTableCells(int row, string menuItem, Quotation quotation);
+		void EmptyQuotationTableCells();
 		void UpdateCustomerTableCells(int row, string menuItem);
 		public void CustomerTable(Table table);
 		Table DisplayQuotation(Table table, Quotation quotation);
