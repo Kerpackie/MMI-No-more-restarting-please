@@ -321,6 +321,7 @@ namespace MMI.Services.MenuService
 				DisplayMainMenu();
 			}
 
+			_displayService.LoadingPrompt();
 			var savedQuotation = await _quotationService.SaveQuotationAsync(quotation);
 			ConvertQuotationToPolicy(savedQuotation);
 		}
